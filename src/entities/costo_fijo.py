@@ -8,10 +8,7 @@ from decimal import Decimal, ROUND_HALF_UP
 
 @dataclass(frozen=True)
 class CostoFijo:
-    """
-    Representa costos fijos totales para un periodo de analisis.
-    """
-
+    "Representa costos fijos totales para un periodo de analisis."
     monto: Decimal
     periodo: str = "mensual"
     moneda: str = "ARS"

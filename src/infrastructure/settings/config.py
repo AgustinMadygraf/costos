@@ -1,3 +1,7 @@
+"""
+path: src/infrastructure/settings/config.py
+"""
+
 from decimal import Decimal
 
 from src.entities.costo_fijo import CostoFijo
