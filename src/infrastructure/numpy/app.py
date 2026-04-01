@@ -7,6 +7,7 @@ import numpy as np
 from src.entities.costo_fijo import CostoFijo
 from src.entities.costos_variables import CostosVariables
 from src.entities.listado_precios import ListadoPrecios
+from src.entities.mix_ventas import MixVentas
 from src.entities.volumen_produccion import VolumenProduccion
 from src.infrastructure.settings.logger import get_logger
 
@@ -22,14 +23,20 @@ def _normalizar_costo_fijo(cf):
 
 def _normalizar_costos_variables(cv):
     if isinstance(cv, CostosVariables):
-        return cv.as_array()
+        return np.array(cv.as_tuple(), dtype=float)
     return np.array(cv, dtype=float)
 
 
 def _normalizar_precios_venta(pv):
     if isinstance(pv, ListadoPrecios):
-        return pv.as_array()
+        return np.array(pv.as_tuple(), dtype=float)
     return np.array(pv, dtype=float)
+
+
+def _normalizar_mix_ventas(m):
+    if isinstance(m, MixVentas):
+        return np.array(m.as_tuple(), dtype=float)
+    return np.array(m, dtype=float)
 
 
 def _as_float_tuple(vector) -> tuple[float, ...]:
@@ -42,7 +49,7 @@ def calcular_punto_equilibrio(cf, productos, pv, cv, m):
     productos = list(productos)
     pv = _normalizar_precios_venta(pv)
     cv = _normalizar_costos_variables(cv)
-    m = np.array(m, dtype=float)
+    m = _normalizar_mix_ventas(m)
     cf = _normalizar_costo_fijo(cf)
 
     # Validaciones basicas

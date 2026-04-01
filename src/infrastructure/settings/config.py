@@ -7,6 +7,7 @@ from decimal import Decimal
 from src.entities.costo_fijo import CostoFijo
 from src.entities.costos_variables import CostosVariables
 from src.entities.listado_precios import ListadoPrecios
+from src.entities.mix_ventas import MixVentas
 
 
 COSTO_FIJO_MENSUAL = CostoFijo(
@@ -25,4 +26,4 @@ COSTOS_VARIABLES_MENSUALES = CostosVariables(
     moneda="ARS",
 )
 
-MIX_VENTAS_MENSUAL = (0.5, 0.3, 0.2)
+MIX_VENTAS_MENSUAL = MixVentas(valores=(0.5, 0.3, 0.2))

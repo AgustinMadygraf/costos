@@ -3,8 +3,10 @@ Path: src/entities/listado_precios.py
 """
 
 from dataclasses import dataclass
+from decimal import Decimal, ROUND_HALF_UP
 
-import numpy as np
+
+_TWO_DECIMALS = Decimal("0.01")
 
 
 @dataclass(frozen=True)
@@ -20,20 +22,29 @@ class ListadoPrecios:
         if not self.moneda.strip():
             raise ValueError("La moneda de precios no puede estar vacia.")
 
-        vector = tuple(float(valor) for valor in self.valores)
+        vector = tuple(
+            float(Decimal(str(valor)).quantize(_TWO_DECIMALS, rounding=ROUND_HALF_UP))
+            for valor in self.valores
+        )
         if any(valor < 0 for valor in vector):
             raise ValueError("Los precios no pueden ser negativos.")
 
         object.__setattr__(self, "valores", vector)
 
-    def as_array(self) -> np.ndarray:
-        "Retorna el vector de precios como un array de numpy."
-        return np.array(self.valores, dtype=float)
+    def as_tuple(self) -> tuple[float, ...]:
+        "Retorna el vector de precios como tupla de float."
+        return self.valores
 
-    def ponderado_por_mix(self, m: np.ndarray) -> float:
+    def ponderado_por_mix(self, m) -> float:
         "Retorna el precio promedio ponderado por mix."
-        return float(self.as_array() @ np.array(m, dtype=float))
+        mix = tuple(float(valor) for valor in m)
+        if len(mix) != len(self.valores):
+            raise ValueError("El mix debe tener la misma longitud que precios.")
+        return float(sum(precio * peso for precio, peso in zip(self.valores, mix)))
 
-    def total_para_volumen(self, q: np.ndarray) -> float:
+    def total_para_volumen(self, q) -> float:
         "Retorna la venta total para un vector de cantidades."
-        return float(self.as_array() @ np.array(q, dtype=float))
+        cantidades = tuple(float(valor) for valor in q)
+        if len(cantidades) != len(self.valores):
+            raise ValueError("El vector q debe tener la misma longitud que precios.")
+        return float(sum(precio * cantidad for precio, cantidad in zip(self.valores, cantidades)))
