@@ -1,15 +1,9 @@
-"""
+﻿"""
 Path: src/interface_adapters/presenters/punto_equilibrio_presenter.py
 """
 
-from src.infrastructure.settings.logger import get_logger
-
-
-logger = get_logger(__name__)
-
-
-def imprimir_resultados(resultado):
-    "Presenta los resultados del calculo de punto de equilibrio de forma legible."
+def presentar_resultados(resultado):
+    "Construye lineas legibles para presentar el resultado de punto de equilibrio."
     productos = resultado["productos"]
     cf = resultado["cf"]
     pv = resultado["pv"]
@@ -23,53 +17,55 @@ def imprimir_resultados(resultado):
     costos_variables_eq = resultado["costos_variables_eq"]
     contribucion_eq = resultado["contribucion_eq"]
 
-    logger.info("=== PARAMETROS DE ENTRADA ===")
-    logger.info("CF total: %s", format(cf, ",.2f"))
+    lineas = []
+    lineas.append("=== PARAMETROS DE ENTRADA ===")
+    lineas.append(f"CF total: {format(cf, ',.2f')}")
 
-    logger.info("=== DATOS POR PRODUCTO ===")
+    lineas.append("=== DATOS POR PRODUCTO ===")
     for i, prod in enumerate(productos):
-        logger.info(
-            "%s: PV=%s | CV=%s | MC=%s | Mix=%s",
-            prod,
-            format(pv[i], ",.2f"),
-            format(cv[i], ",.2f"),
-            format(mc[i], ",.2f"),
-            format(m[i], ".4f"),
+        lineas.append(
+            (
+                f"{prod}: "
+                f"PV={format(pv[i], ',.2f')} | "
+                f"CV={format(cv[i], ',.2f')} | "
+                f"MC={format(mc[i], ',.2f')} | "
+                f"Mix={format(m[i], '.4f')}"
+            )
         )
 
-    logger.info("=== RESULTADOS ===")
-    logger.info(
-        "Margen promedio ponderado del mix: %s",
-        format(mc_promedio, ",.4f"),
+    lineas.append("=== RESULTADOS ===")
+    lineas.append(
+        f"Margen promedio ponderado del mix: {format(mc_promedio, ',.4f')}"
     )
-    logger.info(
-        "Punto de equilibrio total (q_e_total): %s unidades del mix",
-        format(q_e_total, ",.4f"),
+    lineas.append(
+        f"Punto de equilibrio total (q_e_total): {format(q_e_total, ',.4f')} unidades del mix"
     )
 
-    logger.info("=== VECTOR q_e (cantidades por producto en equilibrio) ===")
+    lineas.append("=== VECTOR q_e (cantidades por producto en equilibrio) ===")
     for i, prod in enumerate(productos):
-        logger.info(
-            "%s: q_e=%s unidades | Ventas=%s | CV total=%s | Contribucion=%s",
-            prod,
-            format(q_e[i], ",.4f"),
-            format(ventas_eq[i], ",.2f"),
-            format(costos_variables_eq[i], ",.2f"),
-            format(contribucion_eq[i], ",.2f"),
+        lineas.append(
+            (
+                f"{prod}: "
+                f"q_e={format(q_e[i], ',.4f')} unidades | "
+                f"Ventas={format(ventas_eq[i], ',.2f')} | "
+                f"CV total={format(costos_variables_eq[i], ',.2f')} | "
+                f"Contribucion={format(contribucion_eq[i], ',.2f')}"
+            )
         )
 
-    logger.info("=== CONTROL ===")
-    logger.info("Ventas totales en equilibrio: %s", format(ventas_eq.sum(), ",.2f"))
-    logger.info(
-        "Costos variables totales en equilibrio: %s",
-        format(costos_variables_eq.sum(), ",.2f"),
+    lineas.append("=== CONTROL ===")
+    lineas.append(
+        f"Ventas totales en equilibrio: {format(ventas_eq.sum(), ',.2f')}"
     )
-    logger.info(
-        "Contribucion total en equilibrio: %s",
-        format(contribucion_eq.sum(), ",.2f"),
+    lineas.append(
+        f"Costos variables totales en equilibrio: {format(costos_variables_eq.sum(), ',.2f')}"
     )
-    logger.info("CF total: %s", format(cf, ",.2f"))
-    logger.info(
-        "Diferencia contribucion - CF: %s",
-        format(contribucion_eq.sum() - cf, ",.10f"),
+    lineas.append(
+        f"Contribucion total en equilibrio: {format(contribucion_eq.sum(), ',.2f')}"
     )
+    lineas.append(f"CF total: {format(cf, ',.2f')}")
+    lineas.append(
+        f"Diferencia contribucion - CF: {format(contribucion_eq.sum() - cf, ',.10f')}"
+    )
+
+    return lineas

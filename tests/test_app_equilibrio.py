@@ -1,11 +1,9 @@
-﻿import logging
-
-import pytest
+﻿import pytest
 
 from src.entities.costo_fijo import CostoFijo
 from src.entities.costos_variables import CostosVariables
 from src.infrastructure.numpy.app import calcular_punto_equilibrio
-from src.interface_adapters.presenters import imprimir_resultados
+from src.interface_adapters.presenters import presentar_resultados
 
 
 def _base_kwargs():
@@ -48,13 +46,9 @@ def test_calcular_punto_equilibrio_acepta_entidades_de_dominio():
     assert resultado["q_e_total"] == pytest.approx(resultado["q_e"].sum())
 
 
-def test_imprimir_resultados_loguea_resumen(caplog):
+def test_presentar_resultados_construye_lineas_resumen():
     resultado = calcular_punto_equilibrio(**_base_kwargs())
-
-    with caplog.at_level(logging.INFO):
-        imprimir_resultados(resultado)
-
-    mensajes = [record.getMessage() for record in caplog.records]
-    assert "=== PARAMETROS DE ENTRADA ===" in mensajes
-    assert any("Punto de equilibrio total (q_e_total)" in msg for msg in mensajes)
-    assert any("VECTOR q_e" in msg for msg in mensajes)
+    lineas = presentar_resultados(resultado)
+    assert "=== PARAMETROS DE ENTRADA ===" in lineas
+    assert any("Punto de equilibrio total (q_e_total)" in msg for msg in lineas)
+    assert any("VECTOR q_e" in msg for msg in lineas)
