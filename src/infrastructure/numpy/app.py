@@ -6,6 +6,7 @@ import numpy as np
 
 from src.entities.costo_fijo import CostoFijo
 from src.entities.costos_variables import CostosVariables
+from src.entities.volumen_produccion import VolumenProduccion
 from src.infrastructure.settings.logger import get_logger
 
 
@@ -24,7 +25,13 @@ def _normalizar_costos_variables(cv):
     return np.array(cv, dtype=float)
 
 
+def _as_float_tuple(vector) -> tuple[float, ...]:
+    "Convierte un vector a una tupla de floats, asegurando que sea un vector 1D."
+    return tuple(float(valor) for valor in np.array(vector, dtype=float).tolist())
+
+
 def calcular_punto_equilibrio(cf, productos, pv, cv, m):
+    "Calcula el punto de equilibrio para un mix de productos usando numpy."
     productos = list(productos)
     pv = np.array(pv, dtype=float)
     cv = _normalizar_costos_variables(cv)
@@ -35,9 +42,7 @@ def calcular_punto_equilibrio(cf, productos, pv, cv, m):
     n = len(productos)
 
     if not (len(pv) == len(cv) == len(m) == n):
-        raise ValueError(
-            "productos, pv, cv y m deben tener la misma longitud."
-        )
+        raise ValueError("productos, pv, cv y m deben tener la misma longitud.")
 
     if cf < 0:
         raise ValueError("CF no puede ser negativo.")
@@ -52,9 +57,7 @@ def calcular_punto_equilibrio(cf, productos, pv, cv, m):
         raise ValueError("El mix m no puede tener valores negativos.")
 
     if not np.isclose(m.sum(), 1.0, atol=1e-9):
-        raise ValueError(
-            f"El vector m debe sumar 1. Suma actual: {m.sum():.10f}"
-        )
+        raise ValueError(f"El vector m debe sumar 1. Suma actual: {m.sum():.10f}")
 
     # Margen de contribucion unitario por producto
     mc = pv - cv
@@ -69,21 +72,20 @@ def calcular_punto_equilibrio(cf, productos, pv, cv, m):
     mc_promedio = mc @ m
 
     if mc_promedio <= 0:
-        raise ValueError(
-            "El margen promedio ponderado debe ser mayor que 0."
-        )
+        raise ValueError("El margen promedio ponderado debe ser mayor que 0.")
 
     # Punto de equilibrio total
-    qe_total = cf / mc_promedio
+    q_e_total_formula = cf / mc_promedio
 
     # Vector de cantidades por producto en equilibrio
-    qe = qe_total * m
-    q_total = float(qe.sum())
+    q_e = q_e_total_formula * m
+    volumen = VolumenProduccion(q_e=_as_float_tuple(q_e))
+    q_e_total = volumen.q_e_total
 
     # Ventas y costos variables en equilibrio por producto
-    ventas_eq = pv * qe
-    costos_variables_eq = cv * qe
-    contribucion_eq = mc * qe
+    ventas_eq = pv * q_e
+    costos_variables_eq = cv * q_e
+    contribucion_eq = mc * q_e
 
     return {
         "productos": productos,
@@ -93,10 +95,8 @@ def calcular_punto_equilibrio(cf, productos, pv, cv, m):
         "m": m,
         "mc": mc,
         "mc_promedio": mc_promedio,
-        "Q": q_total,
-        "Qe": qe_total,
-        "q": qe,
-        "qe": qe,
+        "q_e_total": q_e_total,
+        "q_e": q_e,
         "ventas_eq": ventas_eq,
         "costos_variables_eq": costos_variables_eq,
         "contribucion_eq": contribucion_eq,
@@ -104,6 +104,7 @@ def calcular_punto_equilibrio(cf, productos, pv, cv, m):
 
 
 def imprimir_resultados(resultado):
+    "Imprime los resultados del calculo de punto de equilibrio de forma legible."
     productos = resultado["productos"]
     cf = resultado["cf"]
     pv = resultado["pv"]
@@ -111,8 +112,8 @@ def imprimir_resultados(resultado):
     m = resultado["m"]
     mc = resultado["mc"]
     mc_promedio = resultado["mc_promedio"]
-    qe_total = resultado["Qe"]
-    qe = resultado["qe"]
+    q_e_total = resultado["q_e_total"]
+    q_e = resultado["q_e"]
     ventas_eq = resultado["ventas_eq"]
     costos_variables_eq = resultado["costos_variables_eq"]
     contribucion_eq = resultado["contribucion_eq"]
@@ -137,16 +138,16 @@ def imprimir_resultados(resultado):
         format(mc_promedio, ",.4f"),
     )
     logger.info(
-        "Punto de equilibrio total (Qe): %s unidades del mix",
-        format(qe_total, ",.4f"),
+        "Punto de equilibrio total (q_e_total): %s unidades del mix",
+        format(q_e_total, ",.4f"),
     )
 
-    logger.info("=== VECTOR qe (cantidades por producto en equilibrio) ===")
+    logger.info("=== VECTOR q_e (cantidades por producto en equilibrio) ===")
     for i, prod in enumerate(productos):
         logger.info(
-            "%s: qe=%s unidades | Ventas=%s | CV total=%s | Contribucion=%s",
+            "%s: q_e=%s unidades | Ventas=%s | CV total=%s | Contribucion=%s",
             prod,
-            format(qe[i], ",.4f"),
+            format(q_e[i], ",.4f"),
             format(ventas_eq[i], ",.2f"),
             format(costos_variables_eq[i], ",.2f"),
             format(contribucion_eq[i], ",.2f"),

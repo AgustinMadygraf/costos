@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import pytest
 
 from src.entities.costos_variables import CostosVariables
@@ -31,5 +31,4 @@ def test_calculo_acepta_entidad_costos_variables():
         m=[0.5, 0.5],
     )
     assert np.allclose(resultado["cv"], np.array([60.0, 80.0]))
-    assert resultado["Q"] == pytest.approx(resultado["qe"].sum())
-    assert np.allclose(resultado["q"], resultado["qe"])
+    assert resultado["q_e_total"] == pytest.approx(resultado["q_e"].sum())

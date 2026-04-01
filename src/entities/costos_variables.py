@@ -1,3 +1,7 @@
+"""
+Path: src/entities/costos_variables.py
+"""
+
 from dataclasses import dataclass
 
 import numpy as np
@@ -5,9 +9,7 @@ import numpy as np
 
 @dataclass(frozen=True)
 class CostosVariables:
-    """
-    Representa el vector de costos variables unitarios por producto.
-    """
+    "Representa el vector de costos variables unitarios por producto."
 
     valores: tuple[float, ...]
     moneda: str = "ARS"
@@ -25,16 +27,13 @@ class CostosVariables:
         object.__setattr__(self, "valores", vector)
 
     def as_array(self) -> np.ndarray:
+        "Retorna el vector de costos variables como un array de numpy."
         return np.array(self.valores, dtype=float)
 
     def ponderado_por_mix(self, m: np.ndarray) -> float:
-        """
-        Retorna el costo variable promedio ponderado por mix.
-        """
+        "Retorna el costo variable promedio ponderado por mix."
         return float(self.as_array() @ np.array(m, dtype=float))
 
     def total_para_volumen(self, q: np.ndarray) -> float:
-        """
-        Retorna el costo variable total para un vector de cantidades.
-        """
+        "Retorna el costo variable total para un vector de cantidades."
         return float(self.as_array() @ np.array(q, dtype=float))
