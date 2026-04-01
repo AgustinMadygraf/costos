@@ -39,12 +39,18 @@ class CostosVariables:
         "Retorna el costo variable promedio ponderado por mix."
         mix = tuple(float(valor) for valor in m)
         if len(mix) != len(self.valores):
-            raise ValueError("El mix debe tener la misma longitud que costos variables.")
+            raise ValueError(
+                "El mix debe tener la misma longitud que costos variables."
+            )
         return float(sum(costo * peso for costo, peso in zip(self.valores, mix)))
 
     def total_para_volumen(self, q) -> float:
         "Retorna el costo variable total para un vector de cantidades."
         cantidades = tuple(float(valor) for valor in q)
         if len(cantidades) != len(self.valores):
-            raise ValueError("El vector q debe tener la misma longitud que costos variables.")
-        return float(sum(costo * cantidad for costo, cantidad in zip(self.valores, cantidades)))
+            raise ValueError(
+                "El vector q debe tener la misma longitud que costos variables."
+            )
+        return float(
+            sum(costo * cantidad for costo, cantidad in zip(self.valores, cantidades))
+        )

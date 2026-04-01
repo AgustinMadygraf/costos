@@ -2,6 +2,7 @@
 Path: src/interface_adapters/presenters/punto_equilibrio_presenter.py
 """
 
+
 def presentar_resultados(resultado):
     "Construye lineas legibles para presentar el resultado de punto de equilibrio."
     productos = resultado["productos"]
@@ -34,9 +35,7 @@ def presentar_resultados(resultado):
         )
 
     lineas.append("=== RESULTADOS ===")
-    lineas.append(
-        f"Margen promedio ponderado del mix: {format(mc_promedio, ',.4f')}"
-    )
+    lineas.append(f"Margen promedio ponderado del mix: {format(mc_promedio, ',.4f')}")
     lineas.append(
         f"Punto de equilibrio total (q_e_total): {format(q_e_total, ',.4f')} unidades del mix"
     )
@@ -54,9 +53,7 @@ def presentar_resultados(resultado):
         )
 
     lineas.append("=== CONTROL ===")
-    lineas.append(
-        f"Ventas totales en equilibrio: {format(ventas_eq.sum(), ',.2f')}"
-    )
+    lineas.append(f"Ventas totales en equilibrio: {format(ventas_eq.sum(), ',.2f')}")
     lineas.append(
         f"Costos variables totales en equilibrio: {format(costos_variables_eq.sum(), ',.2f')}"
     )

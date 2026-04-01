@@ -47,4 +47,6 @@ class ListadoPrecios:
         cantidades = tuple(float(valor) for valor in q)
         if len(cantidades) != len(self.valores):
             raise ValueError("El vector q debe tener la misma longitud que precios.")
-        return float(sum(precio * cantidad for precio, cantidad in zip(self.valores, cantidades)))
+        return float(
+            sum(precio * cantidad for precio, cantidad in zip(self.valores, cantidades))
+        )
