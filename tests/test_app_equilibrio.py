@@ -1,10 +1,11 @@
-import logging
+﻿import logging
 
 import pytest
 
 from src.entities.costo_fijo import CostoFijo
 from src.entities.costos_variables import CostosVariables
-from src.infrastructure.numpy.app import calcular_punto_equilibrio, imprimir_resultados
+from src.infrastructure.numpy.app import calcular_punto_equilibrio
+from src.interface_adapters.presenters import imprimir_resultados
 
 
 def _base_kwargs():
