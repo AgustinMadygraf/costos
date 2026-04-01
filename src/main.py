@@ -5,8 +5,7 @@ Path: src/main.py
 import logging
 
 from src.infrastructure.numpy.app import calcular_punto_equilibrio
-from src.infrastructure.settings.config import ESCENARIO_BASE
-from src.infrastructure.settings.logger import configure_logging
+from src.infrastructure.settings import ConfigEscenarioGateway, configure_logging
 from src.interface_adapters.controllers import PuntoEquilibrioController
 from src.interface_adapters.presenters import presentar_resultados
 from src.use_cases import CalcularPuntoEquilibrioUseCase
@@ -19,15 +18,17 @@ def main() -> None:
     "Composition root de la aplicacion."
     configure_logging()
 
+    escenario_gateway = ConfigEscenarioGateway()
     use_case = CalcularPuntoEquilibrioUseCase(calculator=calcular_punto_equilibrio)
     controller = PuntoEquilibrioController(use_case=use_case)
+    escenario = escenario_gateway.obtener_escenario_base()
 
     resultado = controller.handle(
-        cf=ESCENARIO_BASE.cf,
-        productos=list(ESCENARIO_BASE.productos),
-        pv=ESCENARIO_BASE.pv,
-        cv=ESCENARIO_BASE.cv,
-        m=ESCENARIO_BASE.m,
+        cf=escenario.cf,
+        productos=escenario.productos,
+        pv=escenario.pv,
+        cv=escenario.cv,
+        m=escenario.m,
     )
 
     for linea in presentar_resultados(resultado):

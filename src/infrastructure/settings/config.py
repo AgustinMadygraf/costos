@@ -9,6 +9,7 @@ from src.entities.costo_fijo import CostoFijo
 from src.entities.costos_variables import CostosVariables
 from src.entities.listado_precios import ListadoPrecios
 from src.entities.mix_ventas import MixVentas
+from src.use_cases import CalcularPuntoEquilibrioInput
 
 
 COSTO_FIJO_MENSUAL = CostoFijo(
@@ -48,3 +49,16 @@ ESCENARIO_BASE = EscenarioBase(
     cv=COSTOS_VARIABLES_MENSUALES,
     m=MIX_VENTAS_MENSUAL,
 )
+
+
+class ConfigEscenarioGateway:  # pylint: disable=too-few-public-methods
+    "Implementacion de gateway que provee escenario desde config local."
+
+    def obtener_escenario_base(self) -> CalcularPuntoEquilibrioInput:
+        return CalcularPuntoEquilibrioInput(
+            cf=ESCENARIO_BASE.cf,
+            productos=list(ESCENARIO_BASE.productos),
+            pv=ESCENARIO_BASE.pv,
+            cv=ESCENARIO_BASE.cv,
+            m=ESCENARIO_BASE.m,
+        )
