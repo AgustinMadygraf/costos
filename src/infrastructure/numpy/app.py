@@ -1,12 +1,20 @@
 import numpy as np
 
+from src.entities.costo_fijo import CostoFijo
+
+
+def _normalizar_costo_fijo(cf):
+    if isinstance(cf, CostoFijo):
+        return float(cf.monto)
+    return float(cf)
+
 
 def calcular_punto_equilibrio(cf, productos, pv, cv, m):
     productos = list(productos)
     pv = np.array(pv, dtype=float)
     cv = np.array(cv, dtype=float)
     m = np.array(m, dtype=float)
-    cf = float(cf)
+    cf = _normalizar_costo_fijo(cf)
 
     # Validaciones básicas
     n = len(productos)
@@ -75,6 +83,7 @@ def calcular_punto_equilibrio(cf, productos, pv, cv, m):
         "costos_variables_eq": costos_variables_eq,
         "contribucion_eq": contribucion_eq,
     }
+
 
 def imprimir_resultados(resultado):
     productos = resultado["productos"]
