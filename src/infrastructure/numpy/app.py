@@ -6,6 +6,7 @@ import numpy as np
 
 from src.entities.costo_fijo import CostoFijo
 from src.entities.costos_variables import CostosVariables
+from src.entities.listado_precios import ListadoPrecios
 from src.entities.volumen_produccion import VolumenProduccion
 from src.infrastructure.settings.logger import get_logger
 
@@ -25,6 +26,12 @@ def _normalizar_costos_variables(cv):
     return np.array(cv, dtype=float)
 
 
+def _normalizar_precios_venta(pv):
+    if isinstance(pv, ListadoPrecios):
+        return pv.as_array()
+    return np.array(pv, dtype=float)
+
+
 def _as_float_tuple(vector) -> tuple[float, ...]:
     "Convierte un vector a una tupla de floats, asegurando que sea un vector 1D."
     return tuple(float(valor) for valor in np.array(vector, dtype=float).tolist())
@@ -33,7 +40,7 @@ def _as_float_tuple(vector) -> tuple[float, ...]:
 def calcular_punto_equilibrio(cf, productos, pv, cv, m):
     "Calcula el punto de equilibrio para un mix de productos usando numpy."
     productos = list(productos)
-    pv = np.array(pv, dtype=float)
+    pv = _normalizar_precios_venta(pv)
     cv = _normalizar_costos_variables(cv)
     m = np.array(m, dtype=float)
     cf = _normalizar_costo_fijo(cf)

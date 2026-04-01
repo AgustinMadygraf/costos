@@ -4,16 +4,21 @@ Path: run.py
 
 
 from src.infrastructure.numpy.app import calcular_punto_equilibrio, imprimir_resultados
-from src.infrastructure.settings.config import COSTO_FIJO_MENSUAL
+from src.infrastructure.settings.config import (
+    COSTO_FIJO_MENSUAL,
+    COSTOS_VARIABLES_MENSUALES,
+    LISTADO_PRECIOS_MENSUAL,
+    MIX_VENTAS_MENSUAL,
+)
 
 
 
 
 productos = ["Bolsa A", "Bolsa B", "Bolsa C"]
 
-pv = [120, 150, 100]      # precios de venta unitarios
-cv = [70, 90, 60]         # costos variables unitarios
-m = [0.5, 0.3, 0.2]       # mix de ventas (debe sumar 1)
+pv = LISTADO_PRECIOS_MENSUAL  # precios de venta unitarios hardcodeados
+cv = COSTOS_VARIABLES_MENSUALES  # costos variables unitarios hardcodeados
+m = MIX_VENTAS_MENSUAL  # mix de ventas hardcodeado (debe sumar 1)
 cf = COSTO_FIJO_MENSUAL   # costos fijos totales hardcodeados
 
 resultado = calcular_punto_equilibrio(
