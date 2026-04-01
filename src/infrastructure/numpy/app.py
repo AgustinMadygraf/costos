@@ -1,6 +1,11 @@
-﻿import numpy as np
+﻿"""
+Path: src/infrastructure/numpy/app.py
+"""
+
+import numpy as np
 
 from src.entities.costo_fijo import CostoFijo
+from src.entities.costos_variables import CostosVariables
 from src.infrastructure.settings.logger import get_logger
 
 
@@ -13,10 +18,16 @@ def _normalizar_costo_fijo(cf):
     return float(cf)
 
 
+def _normalizar_costos_variables(cv):
+    if isinstance(cv, CostosVariables):
+        return cv.as_array()
+    return np.array(cv, dtype=float)
+
+
 def calcular_punto_equilibrio(cf, productos, pv, cv, m):
     productos = list(productos)
     pv = np.array(pv, dtype=float)
-    cv = np.array(cv, dtype=float)
+    cv = _normalizar_costos_variables(cv)
     m = np.array(m, dtype=float)
     cf = _normalizar_costo_fijo(cf)
 
@@ -67,6 +78,7 @@ def calcular_punto_equilibrio(cf, productos, pv, cv, m):
 
     # Vector de cantidades por producto en equilibrio
     qe = qe_total * m
+    q_total = float(qe.sum())
 
     # Ventas y costos variables en equilibrio por producto
     ventas_eq = pv * qe
@@ -81,7 +93,9 @@ def calcular_punto_equilibrio(cf, productos, pv, cv, m):
         "m": m,
         "mc": mc,
         "mc_promedio": mc_promedio,
+        "Q": q_total,
         "Qe": qe_total,
+        "q": qe,
         "qe": qe,
         "ventas_eq": ventas_eq,
         "costos_variables_eq": costos_variables_eq,
@@ -104,38 +118,52 @@ def imprimir_resultados(resultado):
     contribucion_eq = resultado["contribucion_eq"]
 
     logger.info("=== PARAMETROS DE ENTRADA ===")
-    logger.info(f"CF total: {cf:,.2f}")
+    logger.info("CF total: %s", format(cf, ",.2f"))
 
     logger.info("=== DATOS POR PRODUCTO ===")
     for i, prod in enumerate(productos):
         logger.info(
-            f"{prod}: "
-            f"PV={pv[i]:,.2f} | "
-            f"CV={cv[i]:,.2f} | "
-            f"MC={mc[i]:,.2f} | "
-            f"Mix={m[i]:.4f}"
+            "%s: PV=%s | CV=%s | MC=%s | Mix=%s",
+            prod,
+            format(pv[i], ",.2f"),
+            format(cv[i], ",.2f"),
+            format(mc[i], ",.2f"),
+            format(m[i], ".4f"),
         )
 
     logger.info("=== RESULTADOS ===")
-    logger.info(f"Margen promedio ponderado del mix: {mc_promedio:,.4f}")
-    logger.info(f"Punto de equilibrio total (Qe): {qe_total:,.4f} unidades del mix")
+    logger.info(
+        "Margen promedio ponderado del mix: %s",
+        format(mc_promedio, ",.4f"),
+    )
+    logger.info(
+        "Punto de equilibrio total (Qe): %s unidades del mix",
+        format(qe_total, ",.4f"),
+    )
 
     logger.info("=== VECTOR qe (cantidades por producto en equilibrio) ===")
     for i, prod in enumerate(productos):
         logger.info(
-            f"{prod}: "
-            f"qe={qe[i]:,.4f} unidades | "
-            f"Ventas={ventas_eq[i]:,.2f} | "
-            f"CV total={costos_variables_eq[i]:,.2f} | "
-            f"Contribucion={contribucion_eq[i]:,.2f}"
+            "%s: qe=%s unidades | Ventas=%s | CV total=%s | Contribucion=%s",
+            prod,
+            format(qe[i], ",.4f"),
+            format(ventas_eq[i], ",.2f"),
+            format(costos_variables_eq[i], ",.2f"),
+            format(contribucion_eq[i], ",.2f"),
         )
 
     logger.info("=== CONTROL ===")
-    logger.info(f"Ventas totales en equilibrio: {ventas_eq.sum():,.2f}")
-    logger.info(f"Costos variables totales en equilibrio: {costos_variables_eq.sum():,.2f}")
-    logger.info(f"Contribucion total en equilibrio: {contribucion_eq.sum():,.2f}")
-    logger.info(f"CF total: {cf:,.2f}")
+    logger.info("Ventas totales en equilibrio: %s", format(ventas_eq.sum(), ",.2f"))
     logger.info(
-        "Diferencia contribucion - CF: "
-        f"{contribucion_eq.sum() - cf:,.10f}"
+        "Costos variables totales en equilibrio: %s",
+        format(costos_variables_eq.sum(), ",.2f"),
+    )
+    logger.info(
+        "Contribucion total en equilibrio: %s",
+        format(contribucion_eq.sum(), ",.2f"),
+    )
+    logger.info("CF total: %s", format(cf, ",.2f"))
+    logger.info(
+        "Diferencia contribucion - CF: %s",
+        format(contribucion_eq.sum() - cf, ",.10f"),
     )
