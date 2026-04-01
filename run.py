@@ -10,6 +10,7 @@ from src.infrastructure.settings.config import (
     LISTADO_PRECIOS_MENSUAL,
     MIX_VENTAS_MENSUAL,
 )
+from src.use_cases import CalcularPuntoEquilibrioInput, CalcularPuntoEquilibrioUseCase
 
 
 
@@ -21,12 +22,16 @@ cv = COSTOS_VARIABLES_MENSUALES  # costos variables unitarios hardcodeados
 m = MIX_VENTAS_MENSUAL  # mix de ventas hardcodeado (debe sumar 1)
 cf = COSTO_FIJO_MENSUAL   # costos fijos totales hardcodeados
 
-resultado = calcular_punto_equilibrio(
-    cf=cf,
-    productos=productos,
-    pv=pv,
-    cv=cv,
-    m=m
+use_case = CalcularPuntoEquilibrioUseCase(calculator=calcular_punto_equilibrio)
+
+resultado = use_case.execute(
+    CalcularPuntoEquilibrioInput(
+        cf=cf,
+        productos=productos,
+        pv=pv,
+        cv=cv,
+        m=m,
+    )
 )
 
 imprimir_resultados(resultado)
