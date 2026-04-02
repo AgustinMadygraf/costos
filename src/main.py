@@ -2,16 +2,18 @@
 Path: src/main.py
 """
 
-import logging
-
 from src.infrastructure.numpy.app import calcular_punto_equilibrio
-from src.infrastructure.settings import ConfigEscenarioGateway, configure_logging
+from src.infrastructure.settings import (
+    ConfigEscenarioGateway,
+    configure_logging,
+    get_logger,
+)
 from src.interface_adapters.controllers import PuntoEquilibrioController
 from src.interface_adapters.presenters import presentar_resultados
 from src.use_cases import CalcularPuntoEquilibrioUseCase
 
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def main() -> None:
