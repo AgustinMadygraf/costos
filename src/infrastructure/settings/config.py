@@ -4,7 +4,9 @@ path: src/infrastructure/settings/config.py
 
 from dataclasses import dataclass
 from decimal import Decimal
+import json
 import os
+from pathlib import Path
 
 from src.entities.costo_fijo import CostoFijo
 from src.entities.costos_variables import CostosVariables
@@ -16,111 +18,53 @@ from src.use_cases import CalcularPuntoEquilibrioInput
 os.environ["LOG_LEVEL"] = "INFO"
 logger = get_logger(__name__)
 
-COSTO_FIJO_MENSUAL = CostoFijo(
-    monto=Decimal("100000.00"),
-    periodo="mensual",
-    moneda="ARS",
-)
+def _load_escenario_json() -> dict:
+    base_dir = Path(__file__).resolve().parents[3]
+    json_path = base_dir / "data" / "escenario_base.json"
+    with json_path.open("r", encoding="utf-8") as file_handle:
+        return json.load(file_handle)
 
-HARD_CODED_PRODUCTOS_20 = (
-    "120819 BLANCO",
-    "120819 MARRON",
-    "120826 BLANCO",
-    "120826 MARRON",
-    "120841 BLANCO",
-    "120841 MARRON",
-    "161024 MARRON",
-    "221020 MARRON",
-    "221030 BLANCO",
-    "221030 MARRON",
-    "221041 BLANCO",
-    "221041 MARRON",
-    "261236 BLANCO",
-    "261236 MARRON",
-    "281638 BLANCO",
-    "281638 MARRON",
-    "301232 BLANCO",
-    "301232 MARRON",
-    "301241 BLANCO",
-    "301241 MARRON",
-)
 
-LISTADO_PRECIOS_MENSUAL = ListadoPrecios(
-    valores=(
-        115.0,
-        120.0,
-        115.0,
-        120.0,
-        115.0,
-        120.0,
-        120.0,
-        120.0,
-        115.0,
-        150.0,
-        115.0,
-        120.0,
-        115.0,
-        120.0,
-        115.0,
-        120.0,
-        115.0,
-        120.0,
-        115.0,
-        100.0,
-    ),
-    moneda="ARS",
-)
+def _build_entities_from_json(payload: dict):
+    moneda = str(payload["moneda"])
+    cf_payload = payload["costo_fijo"]
+    products_payload = payload["productos"]
+    if not products_payload:
+        raise ValueError("escenario_base.json invalido: productos no puede estar vacio.")
 
-COSTOS_VARIABLES_MENSUALES = CostosVariables(
-    valores=(
-        68.0,
-        70.0,
-        68.0,
-        70.0,
-        68.0,
-        70.0,
-        70.0,
-        70.0,
-        68.0,
-        90.0,
-        68.0,
-        70.0,
-        68.0,
-        70.0,
-        68.0,
-        70.0,
-        68.0,
-        70.0,
-        68.0,
-        60.0,
-    ),
-    moneda="ARS",
-)
-
-MIX_VENTAS_MENSUAL = MixVentas(
-    valores=(
-        0.005684282958,
-        0.130663714828,
-        0.000747931968,
-        0.005265441055,
-        0.002842141479,
-        0.059460591465,
-        0.166564449298,
-        0.001495863936,
-        0.070156018609,
-        0.217842665031,
-        0.002393382298,
-        0.024577044472,
-        0.020343749533,
-        0.100507097874,
-        0.001495863936,
-        0.006388834872,
-        0.003590073447,
-        0.047194507188,
-        0.010919806734,
-        0.121866539020,
+    productos = tuple(
+        f"{str(item['codigo']).strip()} {str(item['color']).strip().upper()}"
+        for item in products_payload
     )
-)
+    precios = tuple(float(item["pv"]) for item in products_payload)
+    costos = tuple(float(item["cv"]) for item in products_payload)
+    mix = tuple(float(item["mix"]) for item in products_payload)
+
+    costo_fijo = CostoFijo(
+        monto=Decimal(str(cf_payload["monto"])),
+        periodo=str(cf_payload["periodo"]),
+        moneda=moneda,
+    )
+    listado_precios = ListadoPrecios(
+        valores=precios,
+        moneda=moneda,
+    )
+    costos_variables = CostosVariables(
+        valores=costos,
+        moneda=moneda,
+    )
+    mix_ventas = MixVentas(valores=mix)
+    return costo_fijo, productos, listado_precios, costos_variables, mix_ventas
+
+
+_ESCENARIO_JSON = _load_escenario_json()
+(
+    COSTO_FIJO_MENSUAL,
+    HARD_CODED_PRODUCTOS_20,
+    LISTADO_PRECIOS_MENSUAL,
+    COSTOS_VARIABLES_MENSUALES,
+    MIX_VENTAS_MENSUAL,
+) = _build_entities_from_json(_ESCENARIO_JSON)
 
 
 @dataclass(frozen=True)

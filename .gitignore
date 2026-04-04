@@ -1,6 +1,5 @@
 __pycache__/
 .coverage
-data/
+data/escenario_base.json
 venv/
 .env
-costos-492111-371a14110c85.json

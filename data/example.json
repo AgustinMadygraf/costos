@@ -1,0 +1,15 @@
+{
+  "metadata": {
+    "version": 1,
+    "descripcion": "Ejemplo minimo de escenario hardcodeado"
+  },
+  "moneda": "ARS",
+  "costo_fijo": {
+    "monto": "50000.00",
+    "periodo": "mensual"
+  },
+  "productos": [
+    { "codigo": "AAA111", "color": "BLANCO", "pv": 120.0, "cv": 70.0, "mix": 0.6 },
+    { "codigo": "BBB222", "color": "MARRON", "pv": 150.0, "cv": 90.0, "mix": 0.4 }
+  ]
+}
