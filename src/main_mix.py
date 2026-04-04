@@ -13,14 +13,16 @@ def main() -> None:
     configure_logging()
     logger.debug("Iniciando entrypoint de mix de ventas.")
     escenario = ConfigEscenarioGateway().obtener_escenario_base()
-    logger.debug("Escenario cargado con %s productos.", len(escenario.productos))
+    productos = escenario.productos
+    mix = escenario.m
+    logger.debug("Escenario cargado con %s productos.", len(productos))
 
     logger.info("=== MIX DE VENTAS ===")
-    for producto, peso in zip(escenario.productos, escenario.m.as_tuple()):
+    for producto, peso in zip(productos, mix.as_tuple()):
         logger.info("%s: Mix=%.4f", producto, peso)
         logger.debug("Detalle mix | producto=%s | peso=%s", producto, peso)
-    logger.info("Suma mix: %.10f", sum(escenario.m.as_tuple()))
-    logger.debug("Vector final de mix: %s", escenario.m.as_tuple())
+    logger.info("Suma mix: %.10f", sum(mix.as_tuple()))
+    logger.debug("Vector final de mix: %s", mix.as_tuple())
 
 
 if __name__ == "__main__":

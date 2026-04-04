@@ -1,1 +1,0 @@
-"""Infraestructura para Google Sheets."""
