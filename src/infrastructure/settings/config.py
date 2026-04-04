@@ -83,16 +83,24 @@ def _build_entities_from_json(payload: dict):
         ("301241", "MARRON"): 60.0,
     }
 
-    pv_by_key: dict[tuple[str, str], float] = {}
+    pv_by_key: dict[tuple[str, str, str], float] = {}
     for item in products_pv:
-        key = (str(item["codigo"]).strip(), str(item["color"]).strip().upper())
+        key = (
+            str(item["codigo"]).strip(),
+            str(item["color"]).strip().upper(),
+            str(item.get("tipo_bolsa") or "CON_MANIJA").strip().upper(),
+        )
         pv_value = item.get("pv")
         if pv_value is not None:
             pv_by_key[key] = float(pv_value)
 
-    cv_by_key: dict[tuple[str, str], float] = {}
+    cv_by_key: dict[tuple[str, str, str], float] = {}
     for item in products_cv:
-        key = (str(item["codigo"]).strip(), str(item["color"]).strip().upper())
+        key = (
+            str(item["codigo"]).strip(),
+            str(item["color"]).strip().upper(),
+            str(item.get("tipo_bolsa") or "CON_MANIJA").strip().upper(),
+        )
         cv_value = item.get("cv")
         if cv_value is not None:
             cv_by_key[key] = float(cv_value)
@@ -104,11 +112,13 @@ def _build_entities_from_json(payload: dict):
     for item in products_mix:
         codigo = str(item["codigo"]).strip()
         color = str(item["color"]).strip().upper()
-        key = (codigo, color)
-        productos_list.append(f"{codigo} {color}")
+        tipo_bolsa = str(item.get("tipo_bolsa") or "CON_MANIJA").strip().upper()
+        key = (codigo, color, tipo_bolsa)
+        default_key = (codigo, color)
+        productos_list.append(f"{codigo} {color} {tipo_bolsa}")
         mix_list.append(float(item["mix"]))
-        precios_list.append(pv_by_key.get(key, default_pv_by_key[key]))
-        costos_list.append(cv_by_key.get(key, default_cv_by_key[key]))
+        precios_list.append(pv_by_key.get(key, default_pv_by_key[default_key]))
+        costos_list.append(cv_by_key.get(key, default_cv_by_key[default_key]))
 
     productos = tuple(productos_list)
     precios = tuple(precios_list)
@@ -135,7 +145,7 @@ def _build_entities_from_json(payload: dict):
 _ESCENARIO_JSON = _load_escenario_json()
 (
     COSTO_FIJO_MENSUAL,
-    HARD_CODED_PRODUCTOS_20,
+    HARD_CODED_PRODUCTOS,
     LISTADO_PRECIOS_MENSUAL,
     COSTOS_VARIABLES_MENSUALES,
     MIX_VENTAS_MENSUAL,
@@ -154,7 +164,7 @@ class EscenarioBase:
 
 
 ESCENARIO_BASE = EscenarioBase(
-    productos=HARD_CODED_PRODUCTOS_20,
+    productos=HARD_CODED_PRODUCTOS,
     cf=COSTO_FIJO_MENSUAL,
     pv=LISTADO_PRECIOS_MENSUAL,
     cv=COSTOS_VARIABLES_MENSUALES,

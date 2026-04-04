@@ -1,7 +1,7 @@
 {
   "metadata": {
     "version": 1,
-    "descripcion": "Ejemplo con esquema separado de mix/pv/cv"
+    "descripcion": "Ejemplo con esquema separado de mix/pv/cv y tipo_bolsa"
   },
   "moneda": "ARS",
   "costo_fijo": {
@@ -9,15 +9,21 @@
     "periodo": "mensual"
   },
   "productos_mix": [
-    { "codigo": "AAA111", "color": "BLANCO", "mix": 0.6 },
-    { "codigo": "BBB222", "color": "MARRON", "mix": 0.4 }
+    { "codigo": "AAA111", "color": "BLANCO", "tipo_bolsa": "CON_MANIJA", "mix": 0.3 },
+    { "codigo": "AAA111", "color": "BLANCO", "tipo_bolsa": "SIN_MANIJA", "mix": 0.2 },
+    { "codigo": "BBB222", "color": "MARRON", "tipo_bolsa": "CON_MANIJA", "mix": 0.3 },
+    { "codigo": "BBB222", "color": "MARRON", "tipo_bolsa": "SIN_MANIJA", "mix": 0.2 }
   ],
   "productos_pv": [
-    { "codigo": "AAA111", "color": "BLANCO", "pv": 120.0 },
-    { "codigo": "BBB222", "color": "MARRON", "pv": 150.0 }
+    { "codigo": "AAA111", "color": "BLANCO", "tipo_bolsa": "CON_MANIJA", "pv": 120.0 },
+    { "codigo": "AAA111", "color": "BLANCO", "tipo_bolsa": "SIN_MANIJA", "pv": 110.0 },
+    { "codigo": "BBB222", "color": "MARRON", "tipo_bolsa": "CON_MANIJA", "pv": 150.0 },
+    { "codigo": "BBB222", "color": "MARRON", "tipo_bolsa": "SIN_MANIJA", "pv": 140.0 }
   ],
   "productos_cv": [
-    { "codigo": "AAA111", "color": "BLANCO", "cv": 70.0 },
-    { "codigo": "BBB222", "color": "MARRON", "cv": 90.0 }
+    { "codigo": "AAA111", "color": "BLANCO", "tipo_bolsa": "CON_MANIJA", "cv": 70.0 },
+    { "codigo": "AAA111", "color": "BLANCO", "tipo_bolsa": "SIN_MANIJA", "cv": 65.0 },
+    { "codigo": "BBB222", "color": "MARRON", "tipo_bolsa": "CON_MANIJA", "cv": 90.0 },
+    { "codigo": "BBB222", "color": "MARRON", "tipo_bolsa": "SIN_MANIJA", "cv": 85.0 }
   ]
 }
